@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  adventofcode2019:
+    image: ${DOCKER_REGISTRY-}adventofcode2019
+    build:
+      context: .
+      dockerfile: AdventOfCode2019/Dockerfile
