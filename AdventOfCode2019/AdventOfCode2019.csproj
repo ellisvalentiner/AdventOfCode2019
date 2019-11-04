@@ -6,4 +6,16 @@
     <DockerComposeProjectPath>../docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Puzzles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="READMD.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MarkdownLog.NS20" Version="0.10.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Puzzles\Timing.cs" />
+  </ItemGroup>
 </Project>
