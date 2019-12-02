@@ -8,10 +8,15 @@ namespace AdventOfCode2019
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Puzzles puzzles = new Puzzles();
-            var methods = puzzles.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static);
+            var methods = puzzles.GetType().GetMethods(
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.DeclaredOnly |
+                BindingFlags.Static
+            );
 
             var data = new List<TimingRecord>();
             foreach (var method in methods)
