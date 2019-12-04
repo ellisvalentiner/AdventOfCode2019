@@ -17,5 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Puzzles\Timing.cs" />
+    <Compile Remove="Utils.cs" />
+    <Compile Remove="Utilities\Utilities.cs" />
   </ItemGroup>
 </Project>
