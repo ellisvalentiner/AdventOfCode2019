@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdventOfCode2019
 {
@@ -71,7 +72,7 @@ namespace AdventOfCode2019
                 }
             }
 
-            Console.WriteLine($"Day 1 - Part One: {part_one}\t Part Two: {part_two}");
+            Console.WriteLine($"Day 2 - Part One: {part_one}\t Part Two: {part_two}");
             return new int[] {part_one, part_two };
         }
 
@@ -101,6 +102,88 @@ namespace AdventOfCode2019
                 }
             }
             return intcode[0];
+        }
+
+        public int[] Puzzle3()
+        {
+            // Read data
+            string[] instructions = File.ReadAllLines("Data/day-3.txt");
+            string[] wire_path_1 = instructions[0].Split(",");
+            string[] wire_path_2 = instructions[1].Split(",");
+
+            // Part wire path and return coordinates
+            List<Coord> path1 = WirePathToCoords(wire_path_1);
+            List<Coord> path2 = WirePathToCoords(wire_path_2);
+
+            // Find closest intersection
+            int min_dist = 999999;
+            var shared_coords = path1.Intersect(path2);
+            foreach (Coord coord in shared_coords)
+            {
+                int dist = ManhattanDistance(coord, new Coord() { x = 0, y = 0 });
+                if (dist > 0)
+                {
+                    min_dist = Math.Min(dist, min_dist);
+                }
+            }
+
+            Console.WriteLine($"Day 3 - Part One: {min_dist}\t Part Two:");
+            return new int[] { min_dist };
+        }
+
+        struct Coord
+        {
+            public int x;
+            public int y;
+        }
+
+        private List<Coord> WirePathToCoords(string[] wirepath)
+        {
+            List<Coord> wire_path_coords = new List<Coord> { new Coord() {x = 0, y = 0 } };
+            foreach (string step in wirepath)
+            {
+                int xval = wire_path_coords[wire_path_coords.Count - 1].x;
+                int yval = wire_path_coords[wire_path_coords.Count - 1].y;
+                switch (step[0])
+                {
+                    case 'R':
+                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        {
+                            Coord new_coord = new Coord() { x = xval + i, y = yval };
+                            wire_path_coords.Add(new_coord);
+                        }
+                        continue;
+                    case 'U':
+                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        {
+                            Coord new_coord = new Coord() { x = xval, y = yval + i};
+                            wire_path_coords.Add(new_coord);
+                        }
+                        continue;
+                    case 'L':
+                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        {
+                            Coord new_coord = new Coord() { x = xval - i, y = yval };
+                            wire_path_coords.Add(new_coord);
+                        }
+                        continue;
+                    case 'D':
+                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        {
+                            Coord new_coord = new Coord() { x = xval, y = yval - i};
+                            wire_path_coords.Add(new_coord);
+                        }
+                        continue;
+                    default:
+                        throw new InvalidDataException("Unexpected direction");
+                }
+            }
+            return wire_path_coords;
+        }
+
+        private int ManhattanDistance(Coord coord1, Coord coord2)
+        {
+            return Math.Abs(coord1.x - coord2.x) + Math.Abs(coord1.y - coord2.y);
         }
     }
 }
