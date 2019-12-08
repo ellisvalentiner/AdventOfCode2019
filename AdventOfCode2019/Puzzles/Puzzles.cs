@@ -37,7 +37,7 @@ namespace AdventOfCode2019
                     fuel = (fuel / 3) - 2;
                 }
             }
-            Console.WriteLine($"Day 1 - Part One: {total_fuel}\t Part Two: {total_fuel_plus_fuel}");
+            Console.WriteLine($"Day 1\tPart One: {total_fuel}\tPart Two: {total_fuel_plus_fuel}");
             return new int[] {total_fuel, total_fuel_plus_fuel };
         }
 
@@ -72,7 +72,7 @@ namespace AdventOfCode2019
                 }
             }
 
-            Console.WriteLine($"Day 2 - Part One: {part_one}\t Part Two: {part_two}");
+            Console.WriteLine($"Day 2\tPart One: {part_one}\tPart Two: {part_two}");
             return new int[] {part_one, part_two };
         }
 
@@ -116,62 +116,66 @@ namespace AdventOfCode2019
             List<Coord> path2 = WirePathToCoords(wire_path_2);
 
             // Find closest intersection
-            int min_dist = 999999;
-            var shared_coords = path1.Intersect(path2);
-            foreach (Coord coord in shared_coords)
+            Coord origin = new Coord(0, 0);
+            int distance_to_nearest_intersection = 999999;
+            int fewest_steps_to_intersection = 999999;
+            var path_intersections = path1.Intersect(path2);
+            foreach (Coord coord in path_intersections)
             {
-                int dist = ManhattanDistance(coord, new Coord() { x = 0, y = 0 });
-                if (dist > 0)
-                {
-                    min_dist = Math.Min(dist, min_dist);
-                }
+                int dist = ManhattanDistance(coord, origin);
+                distance_to_nearest_intersection = Math.Min(dist, distance_to_nearest_intersection);
+                fewest_steps_to_intersection = Math.Min(path1.IndexOf(coord) + path2.IndexOf(coord) + 2, fewest_steps_to_intersection);
             }
-
-            Console.WriteLine($"Day 3 - Part One: {min_dist}\t Part Two:");
-            return new int[] { min_dist };
+            Console.WriteLine($"Day 3\tPart One: {distance_to_nearest_intersection}\tPart Two: {fewest_steps_to_intersection}");
+            return new int[] { distance_to_nearest_intersection, fewest_steps_to_intersection};
         }
 
         struct Coord
         {
-            public int x;
-            public int y;
+            public int x, y;
+
+            public Coord(int p1, int p2)
+            {
+                x = p1;
+                y = p2;
+            }
         }
 
         private List<Coord> WirePathToCoords(string[] wirepath)
         {
-            List<Coord> wire_path_coords = new List<Coord> { new Coord() {x = 0, y = 0 } };
+            List<Coord> wire_path_coords = new List<Coord> { };
+            int x = 0;
+            int y = 0;
             foreach (string step in wirepath)
             {
-                int xval = wire_path_coords[wire_path_coords.Count - 1].x;
-                int yval = wire_path_coords[wire_path_coords.Count - 1].y;
                 switch (step[0])
                 {
                     case 'R':
-                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        for (int i = 0; i < int.Parse(step.Substring(1)); i++)
                         {
-                            Coord new_coord = new Coord() { x = xval + i, y = yval };
-                            wire_path_coords.Add(new_coord);
+                            x++;
+                            wire_path_coords.Add(new Coord(x, y));
                         }
                         continue;
                     case 'U':
-                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        for (int i = 0; i < int.Parse(step.Substring(1)); i++)
                         {
-                            Coord new_coord = new Coord() { x = xval, y = yval + i};
-                            wire_path_coords.Add(new_coord);
+                            y++;
+                            wire_path_coords.Add(new Coord(x, y));
                         }
                         continue;
                     case 'L':
-                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        for (int i = 0; i < int.Parse(step.Substring(1)); i++)
                         {
-                            Coord new_coord = new Coord() { x = xval - i, y = yval };
-                            wire_path_coords.Add(new_coord);
+                            x--;
+                            wire_path_coords.Add(new Coord(x, y));
                         }
                         continue;
                     case 'D':
-                        for (int i = 0; i <= int.Parse(step.Substring(1)); i++)
+                        for (int i = 0; i < int.Parse(step.Substring(1)); i++)
                         {
-                            Coord new_coord = new Coord() { x = xval, y = yval - i};
-                            wire_path_coords.Add(new_coord);
+                            y--;
+                            wire_path_coords.Add(new Coord(x, y));
                         }
                         continue;
                     default:
