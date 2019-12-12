@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Generic;
@@ -17,18 +18,27 @@ namespace AdventOfCode2019
                 BindingFlags.DeclaredOnly |
                 BindingFlags.Static
             );
-
-            var data = new List<TimingRecord>();
+            List<TimingRecord> timing_data = new List<TimingRecord> { };
             foreach (var method in methods)
             {
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
-                method.Invoke(puzzles, null);
-                stopWatch.Stop();
-                data.Add(new TimingRecord(method.Name, stopWatch.Elapsed.ToString("c")));
+                var timings = new List<TimeSpan> { };
+                for (int i = 0; i <= 5; i++)
+                {
+                    Stopwatch stopWatch = new Stopwatch();
+                    stopWatch.Start();
+                    method.Invoke(puzzles, null);
+                    stopWatch.Stop();
+                    timings.Add(stopWatch.Elapsed);
+                }
+                timing_data.Add(new TimingRecord(method.Name, timings));
             }
-            Console.WriteLine("# Advent of Code 2019");
-            Console.WriteLine(data.ToMarkdownTable());
+            File.WriteAllText("README.md", @$"
+# Advent of Code 2019
+
+## Performance
+
+{timing_data.ToMarkdownTable()}
+");
         }
     }
 }

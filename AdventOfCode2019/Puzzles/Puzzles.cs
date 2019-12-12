@@ -7,14 +7,19 @@ namespace AdventOfCode2019
 {
     public class TimingRecord
     {
-        public TimingRecord(string puzzle, string elapsed)
+
+        public TimingRecord(string puzzle, List<TimeSpan> elapsed)
         {
             Puzzle = puzzle;
-            Elapsed = elapsed;
+            Minimum = elapsed.Min();
+            Mean = new TimeSpan(Convert.ToInt64(elapsed.Average((TimeSpan arg) => arg.Ticks)));
+            Maximum = elapsed.Max();
         }
 
         public string Puzzle { get; set; }
-        public string Elapsed { get; set; }
+        public TimeSpan Minimum { get; set; }
+        public TimeSpan Mean { get; set; }
+        public TimeSpan Maximum { get; set; }
     }
 
     public class Puzzles
@@ -37,7 +42,6 @@ namespace AdventOfCode2019
                     fuel = (fuel / 3) - 2;
                 }
             }
-            Console.WriteLine($"Day 1\tPart One: {total_fuel}\tPart Two: {total_fuel_plus_fuel}");
             return new int[] {total_fuel, total_fuel_plus_fuel };
         }
 
@@ -71,8 +75,6 @@ namespace AdventOfCode2019
                     }
                 }
             }
-
-            Console.WriteLine($"Day 2\tPart One: {part_one}\tPart Two: {part_two}");
             return new int[] {part_one, part_two };
         }
 
@@ -126,7 +128,6 @@ namespace AdventOfCode2019
                 distance_to_nearest_intersection = Math.Min(dist, distance_to_nearest_intersection);
                 fewest_steps_to_intersection = Math.Min(path1.IndexOf(coord) + path2.IndexOf(coord) + 2, fewest_steps_to_intersection);
             }
-            Console.WriteLine($"Day 3\tPart One: {distance_to_nearest_intersection}\tPart Two: {fewest_steps_to_intersection}");
             return new int[] { distance_to_nearest_intersection, fewest_steps_to_intersection};
         }
 
@@ -188,6 +189,79 @@ namespace AdventOfCode2019
         private int ManhattanDistance(Coord coord1, Coord coord2)
         {
             return Math.Abs(coord1.x - coord2.x) + Math.Abs(coord1.y - coord2.y);
+        }
+
+        public int[] Puzzle4()
+        {
+            string input = "367479-893698";
+            int[] bounds = input
+                .Split("-")
+                .ToList()
+                .Select(o => int.Parse(o))
+                .ToArray();
+            int count_valid_passwords = 0;
+            int count_valid_part_two_passwords = 0;
+
+            foreach (int candidate_password in Enumerable.Range(bounds[0], bounds[1] - bounds[0]))
+            {
+                bool[] valid = IsValidPassword(candidate_password, bounds[0], bounds[1]);
+                if (valid[0])
+                {
+                    count_valid_passwords++;
+                }
+                if (valid[1])
+                {
+                    count_valid_part_two_passwords++;
+                }
+            }
+            return new int[] { count_valid_passwords, count_valid_part_two_passwords };
+        }
+
+        private bool[] IsValidPassword(int password, int start, int end)
+        {
+            /* Password rules:
+             * - six-digit number
+             * - within the given range
+             * - two adjacent digits are the same
+             * - from left to right digits never decrease
+             */
+            int[] digits = password
+                .ToString()
+                .Select(o => (int)char.GetNumericValue(o))
+                .ToArray();
+
+            // Six-digit number
+            if (digits.Count() != 6)
+            {
+                return new bool[] { false, false };
+            }
+
+            // Within the given range
+            if (password < start || end < password)
+            {
+                return new bool[] { false, false };
+            }
+
+            // From left to right digits never decrease
+            for (int i = 0; i < 5; i++)
+            {
+                if (digits[i + 1] < digits[i])
+                {
+                    return new bool[] { false, false };
+                }
+            }
+
+            // Two adjacent digits are the same
+            if (digits.Distinct().Count() == 6)
+            {
+                return new bool[] { false, false };
+            }
+            if (digits.GroupBy((o) => o).Select(o => o.Count()).Any(o => o == 2))
+            {
+                return new bool[] { true, true };
+            }
+
+            return new bool[] { true, false };
         }
     }
 }
